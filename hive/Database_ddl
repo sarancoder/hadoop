@@ -1,0 +1,39 @@
+#Most we will be using this below command, because its prime step toward using HIVE farmwork
+
+
+/*Create the Database with "HR" */
+
+CREATE DATABASE IF NOT EXISTS HR
+COMMENT 'MY PRACTICE DATABASE'
+LOCATION '/user'
+WITH DBPROPERTIES('CREATOR'='SARAN','DATE'='10-JAN-2017');
+
+/*TO View the set of Database avaiable and check our created database "hr" avaiable or not*/
+
+show DATABASE;
+
+output:
+-----
+OK
+default
+hr
+saran
+test
+
+/* To see the database properties and its HDFS location with DB properties */
+
+DESCRIBE DATABASE EXTENDED hr;
+
+output:
+-------
+hr	MY PRACTICE DATABASE	hdfs://localhost.localdomain:8020/user	{DATE=10-JAN-2017, CREATOR=SARAN}
+
+
+/*select the Database*/
+
+use hr;
+
+/*TO FIND THE CURRENT DATABSE IN USE*/
+/* THIS ONE MOST USED COMMAND , TO FIND THE CURRENT DATABSE.*/
+
+set hive.cli.print.current.db=true;
