@@ -1,0 +1,152 @@
+/*********** PARTITION***************/
+
+#Partition split the large set of data into smaller set of data, hence improves the data scaning time of the query#
+#Choosing right partition in table, higly improve the performance and data fetching time of the query             #
+
+/***** When to use partition ******/
+
+1. There is Limited number of partion
+2. Comparatively equal size partion
+
+/***** Type of Partition *****/
+
+1. Static partition
+2. Dynamic Partion
+
+/**** when to use Static Partition ****/
+
+1. when we are clear about partion value.
+2. where you statically add partion to the table.
+3. we can alter the Static partition, which is not possible in Dynamic partition.
+
+/**** setting to be done for Static Partition ****/
+set hive.mapred.mode=strict; ---> will force to Static partion
+
+/*** whem to use Dynamic Partition ***/
+
+1. when we partition to be create dynamically.
+2. we can't perform alter on dynmaic partition.
+3. its good to do , dynamic partition from non-partition table
+4. when table is not used for CTAS
+
+/**** setting to be done for Dynamic Partition ****/
+
+set hive.exec.dynamic.partition=true;----------------> set partition to "TRUE"
+set hive.exec.dynamic.partition.mode=nonstrict;------> partition to determined dynamically
+set hive.exec.max.dynamic.partitions=n;--------------> Total number of partition that can be created bu one statement with dynamic partion
+set hive.exec.max.dynamic.partitions.pernode=n;--> Maximum number of partition can be created by each map or reduce
+###########################################################################################################################
+
+
+/**** Create table without partition ****/
+
+Create EXTERNAL TABLE IF NOT EXISTS emp (EMPLOYEE_ID TINYINT,
+FIRST_NAME STRING,
+LAST_NAME STRING,
+EMAIL STRING,
+PHONE_NUMBER INT,
+HIRE_DATE STRING,
+JOB_ID STRING,
+SALARY INT,
+COMMISSION_PCT INT,
+MANAGER_ID INT,
+DEPARTMENT_ID INT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/cloudera/github_hive/emp';
+
+Load data inpath '/user/cloudera/git_hive_input/emp.txt' overwrite into table emp;
+
+/**** Create table with partition [Department_id as partition] ****/
+
+/*** USE DYNAMIC PARTITION ***/
+
+Create EXTERNAL TABLE IF NOT EXISTS emp_pat (EMPLOYEE_ID TINYINT,
+FIRST_NAME STRING,
+LAST_NAME STRING,
+EMAIL STRING,
+PHONE_NUMBER INT,
+HIRE_DATE STRING,
+JOB_ID STRING,
+SALARY INT,
+COMMISSION_PCT INT,
+MANAGER_ID INT)
+PARTITIONED BY (DEPARTMENT_ID INT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/cloudera/github_hive/emp_pat';
+
+/**** LOAD DATA INTO PARTION TABLE ****/
+
+METHOD 1: [PARTITION Column to be removed from source table select]
+INSERT OVERWRITE TABLE EMP_PAT
+PARTITION (DEPARTMENT_ID=90)
+SELECT EMPLOYEE_ID ,
+FIRST_NAME ,
+LAST_NAME ,
+EMAIL ,
+PHONE_NUMBER ,
+HIRE_DATE ,
+JOB_ID ,
+SALARY ,
+COMMISSION_PCT ,
+MANAGER_ID FROM EMP E 
+WHERE E.DEPARTMENT_ID=90;
+
+METHOD 2:
+
+Load data inpath '/user/cloudera/git_hive_input/emp.txt' overwrite into table emp_pat PARTITION(DEPARTMENT_ID=90);
+
+output:
+only one split with Department_id=90; is created
+
+###################################################################################################################################################
+
+
+/*** USE DYNAMIC PARTITION ***/
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.max.dynamic.partitions=20;
+set hive.exec.max.dynamic.partitions.pernode=20;
+
+METHOD 1: [PARTITION Column to be include from source table select statement]
+INSERT OVERWRITE TABLE EMP_PAT
+PARTITION (DEPARTMENT_ID)
+SELECT EMPLOYEE_ID ,
+FIRST_NAME ,
+LAST_NAME ,
+EMAIL ,
+PHONE_NUMBER ,
+HIRE_DATE ,
+JOB_ID ,
+SALARY ,
+COMMISSION_PCT ,
+MANAGER_ID ,
+DEPARTMENT_ID FROM EMP E; 
+
+output:
+Table is partition into based on number of unique department_id in EMP tabel
+
+	Loading partition {department_id=100}
+	Loading partition {department_id=90}
+	Loading partition {department_id=20}
+	Loading partition {department_id=70}
+	Loading partition {department_id=10}
+	Loading partition {department_id=50}
+	Loading partition {department_id=80}
+	Loading partition {department_id=40}
+	Loading partition {department_id=__HIVE_DEFAULT_PARTITION__}
+	Loading partition {department_id=110}
+	Loading partition {department_id=60}
+	Loading partition {department_id=30}
+
+
+###########################################################################################################################################3
+
+
+
+
