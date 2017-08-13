@@ -1,0 +1,46 @@
+/* Create table of two type 1.External 2. Internal or MANAGED_TABLE */
+
+####################################################################################################
+#	When to choose the Internal Table:							                                                 #	
+#												                                                                           #	
+#	1. when data is temporary 								                                                       #
+#	2. Only intermediate data is precessed in 					                                             #		
+#	3. Hive holds the own the control of data.						                                           #	
+#	4. when the droping the Internal table , data and metadata is delete			                       #
+#												                                                                           #
+#	when to choose the External table:`							                                                 #	
+#												                                                                           #
+#	1. when data is  "FACTS AND DIMENSION TABLE"                                                     #
+#	2. HDFS holds own the data and control setting.						                                       #
+#	3. when dropping the table ,only metadata to be deleted.				                                 #
+#	4. The data is used outside the HIVE ecosystem like (Hbase,Pig,mapreduce etc at same time)       #
+####################################################################################################
+
+
+/*Creating simple External table*/
+
+
+CREATE  EXTERNAL TABLE IF NOT EXISTS--------------------------------> Keyword EXTERNAL specific its external table and create the table if name NOT EXISTE
+country2 (COUNTRY_ID STRING,COUNTRY_NAME STRING,REGION_ID TINYINT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','---------------------------------------------> Filed/column is delimited by ",'
+LINES TERMINATED BY '\n'---------------------------------------------> New record/line delimited by "new line"
+STORED AS TEXTFILE---------------------------------------------------> Output file is text file
+LOCATION '/user/cloudera/github_hive';-------------------------------> This HDFS location , where tha table data is stored,which is mandatory for External table.
+
+/*Creating simple Internal table*/ 
+
+
+CREATE  EXTERNAL TABLE IF NOT EXISTS--------------------------------> Keyword EXTERNAL specific its external table and create the table if name NOT EXISTE
+country2 (COUNTRY_ID STRING,COUNTRY_NAME STRING,REGION_ID TINYINT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','---------------------------------------------> Filed/column is delimited by ",'
+LINES TERMINATED BY '\n'---------------------------------------------> New record/line delimited by "new line"
+STORED AS TEXTFILE---------------------------------------------------> Output file is text file
+LOCATION '/user/cloudera/github_hive';-------------------------------> This HDFS location , where tha table data is stored,which is optinal for Internal table.
+									if the location not specified, default hive warehouse location is taken, automaticatic.
+
+# To find the default hive datawarehouse loaction is avaiable in "hive.metastore.warehouse.dir" setting of hive-site.xml#
+
+
+
