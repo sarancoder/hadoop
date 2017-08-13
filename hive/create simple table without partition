@@ -1,19 +1,19 @@
 /* Create table of two type 1.External 2. Internal or MANAGED_TABLE */
 
 ####################################################################################################
-#	When to choose the Internal Table:							                                                 #	
+#	When to choose the Internal Table:						                                                 
 #												                                                                           #	
-#	1. when data is temporary 								                                                       #
-#	2. Only intermediate data is precessed in 					                                             #		
-#	3. Hive holds the own the control of data.						                                           #	
-#	4. when the droping the Internal table , data and metadata is delete			                       #
-#												                                                                           #
-#	when to choose the External table:`							                                                 #	
-#												                                                                           #
-#	1. when data is  "FACTS AND DIMENSION TABLE"                                                     #
-#	2. HDFS holds own the data and control setting.						                                       #
-#	3. when dropping the table ,only metadata to be deleted.				                                 #
-#	4. The data is used outside the HIVE ecosystem like (Hbase,Pig,mapreduce etc at same time)       #
+#	1. when data is temporary 								                                                       
+#	2. Only intermediate data is precessed in 					                                             	
+#	3. Hive holds the own the control of data.						                                     
+#	4. when the droping the Internal table , data and metadata is delete			                       
+#												                       
+#	when to choose the External table:`							                       
+#												                       
+#	1. when data is  "FACTS AND DIMENSION TABLE"                                                     
+#	2. HDFS holds own the data and control setting.						         
+#	3. when dropping the table ,only metadata to be deleted.				         
+#	4. The data is used outside the HIVE ecosystem like (Hbase,Pig,mapreduce etc at same time)       
 ####################################################################################################
 
 
