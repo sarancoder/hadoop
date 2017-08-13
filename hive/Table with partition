@@ -61,7 +61,7 @@ Load data inpath '/user/cloudera/git_hive_input/emp.txt' overwrite into table em
 
 /**** Create table with partition [Department_id as partition] ****/
 
-/*** USE DYNAMIC PARTITION ***/
+/*** USE Static PARTITION ***/
 
 Create EXTERNAL TABLE IF NOT EXISTS emp_pat (EMPLOYEE_ID TINYINT,
 FIRST_NAME STRING,
