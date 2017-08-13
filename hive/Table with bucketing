@@ -17,6 +17,7 @@ Advantage of bucketing:
 
 1. Record with same bucket colunm will always store in same bucket
 2. Bucket will always creates equally distributed file 
+3. During joining two table with both column bucketed , can effiently improves the map-sided join
 
 ***** Alter statement is not supported for bucketing in hive, so pre-loaded table data cannot be bucketed
 
