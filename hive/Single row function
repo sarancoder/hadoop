@@ -1,0 +1,3 @@
+Single row functions are the one who work on single row and return one output per row, eg.. length,concat,decode,case,upper,lower,case, etc
+
+
