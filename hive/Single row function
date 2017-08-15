@@ -1,3 +1,125 @@
 Single row functions are the one who work on single row and return one output per row, eg.. length,concat,decode,case,upper,lower,case, etc
 
+# Hive follows same sql-92 standard synatax followed in Noramal sql. so most of the syntax will be similar to SQL, only the execution engine of the hive query is java.
+
+
+/**** LCASE/LOWER ****/
+
+LCASE/LOWER ===> CONVERT STRING "SARAN" to "saran"
+
+sql:
+
+select lower(Fisrt_name) from emp;
+
+hive_sql:
+
+select lower(Fisrt_name) from emp;
+
+/**** UCASE/UPPER ****/
+
+UCASE/UPPER ===? CONVERT STRING "saran" to "SARAN"
+
+sql:
+
+select UCASE(Fisrt_name) from emp;
+
+hive_sql:
+
+select UPPPER(Fisrt_name) from emp;
+
+/**** CONCAT ****/
+
+CONCAT===> CONCAT STRING eg.., 
+
+First_name = saran, last_name = kumar
+
+output: saranKumar.
+
+# Concat two string
+
+SELECT CONCAT("Mr.",FIRST_NAME) FROM EMP;
+
+# concat two or more string
+
+SELECT CONCAT("Mr.",FIRST_NAME,LAST_NAME) FROM EMP;
+
+output: Mr.SARANKUMAR
+
+SELECT CONCAT("Mr.",FIRST_NAME,lower(LAST_NAME)) FROM EMP;
+
+Output : Mr.SARANkumar
+
+/**** CONCAT_WS ****/
+
+CONCAT_WS ====> WILL concate the string with delimiter
+
+SELECT CONCAT_WS("Mr.",FIRST_NAME,lower(LAST_NAME)) FROM EMP;
+
+output: SARANMr.kumar [Mr. is delimiter]
+
+/**** length ***/
+
+select length(First_name) as length,first_name as first from emp;
+
+select length(salary) as l,(salary+2) from emp;
+
+/**** CASE ****/
+
+CASE ======> USE TO IMPLEMENT THE IF..ELSE.. END CONDITION IN QUERY
+
+METHOD:1
+
+SYNTAX:
+
+CASE WHEN a THEN b [WHEN c THEN d]* [ELSE e] END
+
+
+SELECT CASE WHEN C.REGION_ID=1 THEN "EUROPE" 
+WHEN C.REGION_ID=2 THEN "AMERICA"
+WHEN C.REGION_ID=3 THEN "ASIA"
+WHEN C.REGION_ID=4 THEN "MIDDLE EAST ASIA"
+ELSE "ROW" END,
+C.* FROM COUNTRY C;
+
+METHOD 2:
+
+SYNTAX:
+
+CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END
+
+SELECT CASE C.REGION_ID WHEN '1' THEN "EUROPE" 
+WHEN '2' THEN "AMERICA"
+WHEN '3' THEN "ASIA"
+WHEN '4' THEN "MIDDLE EAST ASIA"
+ELSE "ROW" END,C.* FROM COUNTRY;
+
+
+/***** INSTR *****/
+
+INSTR ===> RETURNS THE FIRST OCCURANCE OF THE STRING IN SEARCHED STRING
+
+
+
+SELECT INSTR(JOB_ID,"_") AS INS,JOB_ID AS JOB_ID FROM EMP;
+
+OUTPUT: 3   AD_PRES [Because "_" occurs at 3 position of the string]
+
+
+/**** SUBSTR ****/
+
+SUBSTR===> USED WHEN SLICE THE STRING BASED ON THE START AND LENGTH.
+
+QUESTION: WANT TO SLICE THE DATA AFTER "_" IN JOB_ID
+
+METHOD 1: WHEN LENGTH OF STRING DOESN'T MATTER
+
+SELECT SUBSTR(JOB_ID,INSTR(JOB_ID,"_")+1) FROM EMP;
+
+OUTPUT: PRES
+
+METHOD 2 :WHEN LENGTH OF STRING MATTER
+
+SELECT SUBSTR(JOB_ID,INSTR(JOB_ID,"_")+1,2) FROM EMP LIMIT 1;
+
+OUTPUT : PR
 
