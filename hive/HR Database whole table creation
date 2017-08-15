@@ -1,0 +1,170 @@
+# Oarcle SQl sample HR databse is taken as an input, and the below tables are created in Hive formated for practice
+
+################################################################################################################################
+CREATE TABLE IF NOT EXISTS
+cou (COUNTRY_ID STRING,COUNTRY_NAME STRING,REGION_ID TINYINT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/cloudera/github_hive/cou';
+
+desc formatted cou;
+
+Load data inpath '/user/cloudera/git_hive_input/country.txt' overwrite into table country;
+
+CREATE  EXTERNAL TABLE IF NOT EXISTS
+country (COUNTRY_ID STRING,COUNTRY_NAME STRING)
+PARTITIONED BY (REGION_ID TINYINT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/cloudera/github_hive/cou_ext';
+
+
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.max.dynamic.partitions=5;
+set hive.exec.max.dynamic.partitions.pernode=5;
+INSERT OVERWRITE TABLE COUNTRY
+PARTITION (REGION_ID)
+SELECT COUNTRY_ID,
+COUNTRY_NAME,
+REGION_ID
+FROM COU;
+
+desc formatted country;
+
+################################################################################################################################
+
+
+Create EXTERNAL TABLE IF NOT EXISTS emp_BUK (EMPLOYEE_ID TINYINT,
+FIRST_NAME STRING,
+LAST_NAME STRING,
+EMAIL STRING,
+PHONE_NUMBER INT,
+HIRE_DATE STRING,
+JOB_ID STRING,
+SALARY INT,
+COMMISSION_PCT INT,
+MANAGER_ID INT,
+DEPARTMENT_ID INT)
+CLUSTERED BY (DEPARTMENT_ID) INTO 3 BUCKETS
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/cloudera/github_hive/emp_buk';
+
+
+
+set hive.enforce.bucketing = true;
+
+INSERT OVERWRITE TABLE EMP_BUK
+SELECT EMPLOYEE_ID ,
+FIRST_NAME ,
+LAST_NAME ,
+EMAIL ,
+PHONE_NUMBER ,
+HIRE_DATE ,
+JOB_ID ,
+SALARY ,
+COMMISSION_PCT ,
+MANAGER_ID ,
+DEPARTMENT_ID FROM EMP E;
+
+
+
+Create EXTERNAL TABLE IF NOT EXISTS emp_pat (EMPLOYEE_ID TINYINT,
+FIRST_NAME STRING,
+LAST_NAME STRING,
+EMAIL STRING,
+PHONE_NUMBER INT,
+HIRE_DATE STRING,
+JOB_ID STRING,
+SALARY INT,
+COMMISSION_PCT INT,
+MANAGER_ID INT)
+PARTITIONED BY (DEPARTMENT_ID INT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/cloudera/github_hive/emp_pat';
+
+
+INSERT OVERWRITE TABLE EMP_PAT
+PARTITION (DEPARTMENT_ID)
+SELECT EMPLOYEE_ID ,
+FIRST_NAME ,
+LAST_NAME ,
+EMAIL ,
+PHONE_NUMBER ,
+HIRE_DATE ,
+JOB_ID ,
+SALARY ,
+COMMISSION_PCT ,
+MANAGER_ID ,
+DEPARTMENT_ID FROM EMP E; 
+
+##################################################################################################
+
+CREATE EXTERNAL TABLE  IF NOT EXISTS DEP (
+DEPARTMENT_ID INT,
+DEPARTMENT_NAME STRING,
+MANAGER_ID INT,
+LOCATION_ID INT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/cloudera/github_hive/dep'
+
+Load data inpath '/user/cloudera/git_hive_input/dept.txt' overwrite into table DEP;
+
+##################################################################################################
+CREATE EXTERNAL TABLE IF NOT EXISTS JOBHIS(
+EMPLOYEE_ID INT,
+START_DATE STRING,
+END_DATE STRING,
+JOB_ID STRING,
+DEPARTMENT_ID INT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/cloudera/github_hive/jobhis'
+
+Load data inpath '/user/cloudera/git_hive_input/jobhis.txt' overwrite into table jobhis;
+
+##################################################################################################
+
+CREATE EXTERNAL TABLE IF NOT EXISTS JOBS
+(JOB_ID STRING,
+JOB_TITLE STRING,
+MIN_SALARY INT,
+MAX_SALARY INT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/cloudera/github_hive/jobs';
+
+Load data inpath '/user/cloudera/git_hive_input/jobs.txt' overwrite into table jobs;
+
+##################################################################################################
+
+CREATE EXTERNAL TABLE IF NOT EXISTS REG
+(REGION_ID INT,
+REGION_NAME STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/cloudera/github_hive/reg';
+
+Load data inpath '/user/cloudera/git_hive_input/reg.txt' overwrite into table reg;
+
+
+##################################################################################################
