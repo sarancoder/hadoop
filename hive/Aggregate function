@@ -1,0 +1,104 @@
+/***************************************** AGGERATION FUNCTION ********************************************************/
+
+**Aggregate function return single row based on group of row.
+They are commonly used with GROUP BY function and HAVING function to filter the grouping data.
+
+**If we use the Aggregation without GROUP BY entire row in table is considered.
+
+** Some of the Aggregate function are MIN, MAX, SUM, AVG, count
+
+/*Count function while aggregation include null, while rest of the function does not includes it.In hive query, both count(1), count(*) remains same.*/
+
+when to use of group by complusory
+
+1. To do aggregation based on the set of group.
+2. In select statement, where we include both aggregate function, along with other column eg.. select count(1),age from emp group by dep;
+
+
+/********* count ************/
+
+use case : To find the employee who have changed more than one time.
+
+Method 1:
+
+SELECT COUNT(1),EMPLOYEE_ID FROM JOBHIS
+GROUP BY EMPLOYEE_ID;
+
+OUTPUT: [EMPLOYEE WITH NO OF JOB CHANGE]
+
+COUNT(1) EMPLOYEE_ID
+2	 101
+1	 102
+1	 114
+1	 122
+2	 176
+2	 200
+1	 201
+
+SELECT COUNT(1),EMPLOYEE_ID FROM JOBHIS
+GROUP BY EMPLOYEE_ID 
+HAVING COUNT(1) >1;
+
+
+OUTPUT: employee who have changed more than one time
+
+COUNT(1) EMPLOYEE_ID
+2	 101
+2	 176
+2	 200
+
+#GET THE EMPLOYEE DETAILS BASED ON JOBHIS TABLE DATA#
+SELECT A.* FROM EMP A
+JOIN (SELECT COUNT(1) COU,EMPLOYEE_ID ID FROM JOBHIS
+GROUP BY EMPLOYEE_ID 
+HAVING COUNT(1) >1) B
+ON  A.EMPLOYEE_ID=B.ID;
+
+
+/******** MAX,MIN *********/
+
+SELECT MAX(MIN_SALARY),MIN(MIN_SALARY) FROM JOBS;
+
+output: display min and max Min_salary in whole jobs table
+
+20080	2008
+
+case: find the min and max salary by department wise.
+
+select MAX(SALARY) AS MAX,MIN(SALARY) AS MIN,JOB_ID AS ID FROM EMP
+GROUP BY JOB_ID;
+
+OUTPUT:
+
+MAX     MIN     ID
+ 
+9000 	6900 	FI_ACCOUNT
+9000 	4200 	IT_PROG
+
+/**** COLLECT_SET *******/
+
+COLLECT_SET ===> IS SIMILAR TO LISTAGG & COLLECT FUNCTION IN SQL, WHICH USED FOR STRING AGGREATION TECHNIQUE
+
+
+SELECT COLLECT_SET(JOB_ID) FROM EMP;
+
+OUTPUT:
+
+[CSE,IT,EEE,ECE,MECH]
+
+/**** EXPLODE ****/
+
+EXPLODE ====> SPILT THE ARRAY ELEMENT INTO ROWS;
+
+SELECT EXPLODE(COLLECT_SET(JOB_ID)) AS EXPLODE FROM EMP;
+
+OUTPUT:
+
+EXPLODE
+CSE
+IT
+EEE
+MECH
+
+
+
