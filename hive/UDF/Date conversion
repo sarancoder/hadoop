@@ -1,0 +1,21 @@
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.util.Date;
+
+public class date {
+  public static void main(String[] argv) throws Exception {
+
+    /*//Format formatter = new SimpleDateFormat("dd-MMM-yy");
+Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+    String s = formatter.format(new Date());
+    System.out.println(s);*/
+SimpleDateFormat sdf=new SimpleDateFormat("dd-MMM-yy");
+Date w = sdf.parse("16-Apr-2017");
+//Format formatter = new SimpleDateFormat("dd-MMM-yy");
+//System.out.println(w);
+Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+    String s = formatter.format(w);
+    System.out.println(s);
+  }
+}
