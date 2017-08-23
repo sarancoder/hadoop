@@ -1,0 +1,157 @@
+/* Case study on Top twenty rated movies (Condition: The movie should be rated/viewed by at least 40 users)
+ * Data set download link : http://grouplens.org/datasets/movielens/1m/
+ * Input file 1 : rating.dat input file 2: movies.dat
+ * Expected output : [movie_id movie_name no_of_views,no_ofratings]
+ * 
+ * Author : S.SaranKumar
+ * e-mail id : sarankumar26@gmail.com
+ * 
+ */
+
+import java.io.IOException;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+ public class case2 {
+	
+	public static class rate extends
+	Mapper<LongWritable, Text, Text, Text> {
+
+// setup , map, run, cleanup
+		
+		
+		Text tx;
+		Text it;	
+
+	public void map(LongWritable key, Text value, Context context)
+			throws IOException, InterruptedException {
+		 
+		String line = value.toString();
+		String[] elements = line.split("::");
+		tx = new Text(elements[1]);
+		it = new Text(elements[2]);		
+		context.write(tx,new Text("rat\t" +it));
+		// [key,value]--->[movie_id,mov rating]	
+	}
+	}
+	
+	public static class movie extends
+	Mapper<LongWritable, Text, Text, Text> {
+
+// setup , map, run, cleanup
+
+	public void map(LongWritable key, Text value, Context context)
+			throws IOException, InterruptedException {
+		String line = value.toString();
+		String[] elements = line.split("::");
+	
+	
+			Text tx = new Text(elements[0]);
+			Text it = new Text(elements[1]);
+			context.write(tx,new Text("mov\t" +it));
+			// [key,value]--->[movie_id,mov movie_name]
+			
+	}
+	}
+public static class ReduceJoinReducer extends
+	Reducer<Text, Text, Text, Text> {
+	private Map<String, Integer> countMap = new HashMap<String,Integer>();
+	int map_cnt;
+	 List <String> list1 = new LinkedList<String>();
+	public void reduce(Text key, Iterable<Text> values, Context context)
+		throws IOException, InterruptedException {
+	
+	String name = "";
+	int total = 0; // rating total
+	map_cnt=0; // viewer count 
+	/*Reduce side join of two mapper */
+	for (Text t : values) {
+		String parts[] = t.toString().split("\t");
+		if (parts[0].equals("rat")) {
+			map_cnt++;
+			total += Integer.parseInt(parts[1]);
+		} else if (parts[0].equals("mov")) {
+			name = parts[1];
+		}
+		
+		
+	}
+	
+	
+	String str1 = String.format("%s\t%s\t%d",key,name,map_cnt);
+	// Allow the movie only viewed for aleast 40 user 
+	if(map_cnt>=40){
+		countMap.put(str1, total);	
+	}
+	
+	
+	}
+	//context.write(new Text(name), new Text(str));
+	@Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+
+		List<Entry<String,Integer>> list =new LinkedList<Entry<String,Integer>>(countMap.entrySet());
+		Collections.sort(list,new Comparator<Entry<String,Integer>>(){
+			public int compare(Entry<String,Integer> o1,Entry<String,Integer>o2){
+				return o2.getValue().compareTo(o1.getValue());
+			}
+		});
+		
+        int counter = 0;
+        
+		for(Entry<String, Integer> entry : list){
+            
+			String str3 = String.format("%d",entry.getValue());
+			if (counter ++ == 20) {
+                break;
+            }
+			context.write(new Text(entry.getKey()),new Text(str3));
+        }
+            
+        }
+}
+
+	
+	
+	public static void main(String[] args) throws ClassNotFoundException, IOException, InterruptedException {
+		// TODO Auto-generated method stub
+
+		if (args.length != 3) {
+			System.err.println("Insufficient args");
+			System.exit(-1);
+		}
+		Configuration conf = new Configuration();
+		Job job = new Job(conf, "Reduce-side join");
+		job.setJarByClass(case2.class);
+		job.setReducerClass(ReduceJoinReducer.class);
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(Text.class);
+
+
+		MultipleInputs.addInputPath(job, new Path(args[0]),TextInputFormat.class, rate.class);
+		MultipleInputs.addInputPath(job, new Path(args[1]),TextInputFormat.class, movie.class);
+		Path outputPath = new Path(args[2]);
+
+
+		FileOutputFormat.setOutputPath(job, outputPath);
+		outputPath.getFileSystem(conf).delete(outputPath);
+		System.exit(job.waitForCompletion(true) ? 0 : 1);
+	}
+
+
+	}
+
+
