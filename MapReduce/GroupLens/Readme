@@ -1,8 +1,0 @@
-Grouplens is Social Computing Research at the University of Minnesota, based on dataset collected from movieLens.com. Some case study is done
-and Implemented in mapreduce code.
-
-You are required to write a code in Hadoop Map Reduce to get results for the following questions: 
-1. Top ten most viewed movies with their movies Name (Ascending or Descending order) 
-2. Top twenty rated movies (Condition: The movie should be rated/viewed by at least 40 users) 
-3. We wish to know how have the genres ranked by Average Rating, for each profession and age group.
-  The age groups to be considered are: 18-35, 36-50 and 50+.
